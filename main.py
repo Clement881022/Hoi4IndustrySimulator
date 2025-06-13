@@ -10,18 +10,18 @@ event_manager = EventManager()
 ic_values = []
 dates = []
 
-while(globals.SWITCH_DATE < globals.END_DATE):
+while(globals.TRANSFORM_DATE < globals.END_DATE):
     globals.reset()
-    globals.SWITCH_DATE += relativedelta(months=1)
+    globals.TRANSFORM_DATE += relativedelta(months=1)
     civilian_factory_line = CivilianFactoryLine(event_manager)
     military_factory_line = MilitaryFactoryLine(event_manager)
     while globals.CURRENT_DATE < globals.END_DATE:  
         civilian_factory_line.build_one_day()
         military_factory_line.produce_one_day()
         globals.CURRENT_DATE += timedelta(days=1)
-    print(f"轉軍工時間: {globals.SWITCH_DATE.date()} 民工數: {globals.CIVILIAN} 軍工數: {globals.MILITARY} 總產能: {military_factory_line.ic}")
+    print(f"民轉軍時間: {globals.TRANSFORM_DATE.date()} 可用民:{civilian_factory_line.active_civilian_num} 民工數: {globals.CIVILIAN} 軍工數: {globals.MILITARY} 總產能: {military_factory_line.ic}")
     ic_values.append(military_factory_line.ic)
-    dates.append(globals.SWITCH_DATE.date())
+    dates.append(globals.TRANSFORM_DATE.date())
 
 plt.figure(figsize=(10, 6))  # 設定圖形大小
 plt.plot(dates, ic_values, marker='o', color='b', label='ic')  # 繪製折線圖

@@ -6,10 +6,13 @@ class CivilianFactoryLine:
         self.active_civilian_num = globals.CIVILIAN - (globals.CIVILIAN + globals.MILITARY) * globals.CONSUMER_GOODS - globals.MILITARY * globals.TRADE_CIV_EACH_MIL
         self.civilian_line = [0] * 20
         self.military_line = [0] * 20
+        self.civilian_to_military_line = [0] * 20
         self.event_manager = event_manager
 
     def build_one_day(self):
-        if globals.CURRENT_DATE >= globals.SWITCH_DATE:
+        if globals.CURRENT_DATE >= globals.TRANSFORM_DATE:
+            self.civilian_to_military()
+        elif globals.CURRENT_DATE >= globals.SWITCH_DATE:
             self.build_military()
         else:
             self.build_civilian()
@@ -39,6 +42,18 @@ class CivilianFactoryLine:
                 self.military_line[i] += remaining_factories * globals.get_construction_speed()
                 remaining_factories = 0
 
+    def civilian_to_military(self):
+        remaining_factories = self.active_civilian_num
+        for i in range(len(self.civilian_to_military_line)):
+            if remaining_factories <= 2:
+                break
+            if remaining_factories >= 15:
+                self.civilian_to_military_line[i] += 15 * ( globals.get_construction_speed() - 0.3 )
+                remaining_factories -= 15
+            else:
+                self.civilian_to_military_line[i] += remaining_factories * ( globals.get_construction_speed() - 0.3 )
+                remaining_factories = 0
+
     def update(self):
         for i in range(len(self.civilian_line)):
             if self.civilian_line[i] >= globals.CIVILIAN_COST:
@@ -51,6 +66,14 @@ class CivilianFactoryLine:
                 globals.MILITARY += 1
                 self.event_manager.trigger_event("military_factory_built")
         
+        for i in range(len(self.civilian_to_military_line)):
+            if self.civilian_to_military_line[i] >= globals.CIVILIAN_TO_MILITARY_COST:
+                self.civilian_to_military_line[i] -= globals.CIVILIAN_TO_MILITARY_COST
+                globals.CIVILIAN -= 1
+                globals.MILITARY += 1
+                self.event_manager.trigger_event("military_factory_built")
+        
         self.civilian_line.sort(reverse=True)
         self.military_line.sort(reverse=True)
+        self.civilian_to_military_line.sort(reverse=True)
         self.active_civilian_num = globals.CIVILIAN - (globals.CIVILIAN + globals.MILITARY) * globals.CONSUMER_GOODS - globals.MILITARY * globals.TRADE_CIV_EACH_MIL
