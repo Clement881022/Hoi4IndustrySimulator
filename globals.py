@@ -8,13 +8,8 @@ SWITCH_DATE = datetime(1938, 1, 1)
 TRANSFORM_DATE = datetime(1938, 1, 1)
 TARGET_TECH_DATE = datetime(1938, 7, 1)
 
-# Specials
+# Trade
 TRADE_CIV_EACH_MIL = 0.5
-def reset():
-    global CIVILIAN, MILITARY, CURRENT_DATE
-    CIVILIAN = 200
-    MILITARY = 100
-    CURRENT_DATE = datetime(1936, 1, 1)
 
 # Construction
 CIVILIAN = 200
